@@ -18,19 +18,20 @@ def index():
     return render_template('register.html',organization_name=organization_name)
 @app.route('/invite',methods=['POST','GET'])
 def invite():
-    if(request.method=='GET'):
-        email=request.args.get('git_email')
-        try:
-            gh = Github(token)
-            org = gh.get_organization(organization_name)
+    if request.method != 'GET':
+        return
+    email=request.args.get('git_email')
+    try:
+        gh = Github(token)
+        org = gh.get_organization(organization_name)
 
-            try:
-                org.invite_user(email=email)
-                return render_template('success.html',redirection_url=redirection_url)
-            except :
-                return render_template('unsuccess.html')
+        try:
+            org.invite_user(email=email)
+            return render_template('success.html',redirection_url=redirection_url)
         except :
-            return '<h1>Oops ! Invalid Token ID or Organization Name</h1><hr><p>Please Modify it from App Settings->Config Vars option or <i>Create a new app</i></p>'
+            return render_template('unsuccess.html')
+    except :
+        return '<h1>Oops ! Invalid Token ID or Organization Name</h1><hr><p>Please Modify it from App Settings->Config Vars option or <i>Create a new app</i></p>'
 
 if __name__== '__main__':
     app.run(debug=False)
